@@ -4,13 +4,13 @@ namespace App\Services;
 
 class ChunkingService
 {
-    private int $chunkSize;
-    private int $overlap;
+    private int $maxCharsPerChunk;
+    private int $overlapChars;
 
-    public function __construct(int $chunkSize = 500, int $overlap = 50)
+    public function __construct(int $maxCharsPerChunk = 2000, int $overlapChars = 200)
     {
-        $this->chunkSize = $chunkSize;
-        $this->overlap = $overlap;
+        $this->maxCharsPerChunk = $maxCharsPerChunk;
+        $this->overlapChars = $overlapChars;
     }
 
     public function split(string $text): array
@@ -23,14 +23,16 @@ class ChunkingService
             $paragraph = trim($paragraph);
             if (empty($paragraph)) continue;
 
-            $words = str_word_count($current . ' ' . $paragraph, 1, 'áàâãéèêíìîóòôõúùûçÁÀÂÃÉÈÊÍÌÎÓÒÔÕÚÙÛÇ');
+            $candidate = empty($current)
+                ? $paragraph
+                : $current . "\n\n" . $paragraph;
 
-            if (count($words) > $this->chunkSize && !empty($current)) {
+            if (mb_strlen($candidate) > $this->maxCharsPerChunk && !empty($current)) {
                 $chunks[] = trim($current);
-                $overlapWords = array_slice($words, -$this->overlap);
-                $current = implode(' ', $overlapWords) . ' ' . $paragraph;
+                $overlap = mb_substr($current, -$this->overlapChars);
+                $current = $overlap . "\n\n" . $paragraph;
             } else {
-                $current = empty($current) ? $paragraph : $current . "\n\n" . $paragraph;
+                $current = $candidate;
             }
         }
 
