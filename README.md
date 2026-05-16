@@ -22,8 +22,8 @@ Built with Laravel 11 + PostgreSQL/pgvector + OpenAI.
 ## Status
 
 - [x] RAG prototype working in Python notebook
-- [ ] Laravel API structure
-- [ ] Ingestion pipeline
+- [x] Laravel API structure
+- [x] Ingestion pipeline
 - [ ] Query endpoint
 - [ ] OpenAPI documentation
 
